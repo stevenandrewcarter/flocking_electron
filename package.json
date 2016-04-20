@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "victor": "^1.1.0"
+  },
   "devDependencies": {
     "electron-prebuilt": "^0.37.6"
   },

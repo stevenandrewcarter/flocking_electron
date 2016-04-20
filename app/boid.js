@@ -1,10 +1,10 @@
-var Point = require('./point.js')
+var Vector = require('./vector.js')
 
 module.exports = function(x, y, size) {
-  this.location = new Point(x, y);
+  this.location = new Vector(x, y);
   var angle =  Math.random() * Math.PI * 2;
-  this.velocity = new Point(Math.cos(angle), Math.sin(angle));
-  this.acceleration = new Point(0, 0);
+  this.velocity = new Vector(Math.cos(angle), Math.sin(angle));
+  this.acceleration = new Vector(0, 0);
   this.maxForce = 0.03;
   this.maxSpeed = 2;
   this.size = size;
@@ -33,12 +33,12 @@ module.exports = function(x, y, size) {
   }
 
   this.seek = function(target) {
-    var desired = new Point(target.x, target.y);
+    var desired = new Vector(target.x, target.y);
     desired.subtract(this.location);
     desired.normalize();
     desired.multiply(this.maxSpeed);
 
-    var steer = new Point(desired.x, desired.y);
+    var steer = new Vector(desired.x, desired.y);
     steer.subtract(this.velocity);
     steer.limit(this.maxForce);
     return steer;
@@ -53,12 +53,12 @@ module.exports = function(x, y, size) {
 
   this.calculateSeparation = function(boids) {
     var desiredSeparation = 25.0;
-    var steer = new Point(0, 0);
+    var steer = new Vector(0, 0);
     var count = 0;
     for (var i = 0; i < boids.length; i++) {
       var distance = this.location.distance(boids[i].location);
       if (distance > 0 && distance < desiredSeparation) {
-        var differenace = new Point(this.location.x, this.location.y);
+        var differenace = new Vector(this.location.x, this.location.y);
         differenace.subtract(boids[i].location);
         differenace.normalize();
         differenace.divide(distance);
@@ -77,7 +77,7 @@ module.exports = function(x, y, size) {
 
   this.calculateAlignment = function(boids) {
     var neighbourDistance = 50;
-    var sum = new Point(0, 0);
+    var sum = new Vector(0, 0);
     var count = 0;
     for (var i = 0; i < boids.length; i++) {
       var distance = this.location.distance(boids[i].location);
@@ -90,17 +90,17 @@ module.exports = function(x, y, size) {
       sum.divide(count);
       sum.normalize();
       sum.multiply(this.maxSpeed);
-      var steer = new Point(sum.x, sum.y);
+      var steer = new Vector(sum.x, sum.y);
       steer.subtract(this.velocity);
       steer.limit(this.maxForce);
       return steer;
     }
-    return new Point(0, 0);
+    return new Vector(0, 0);
   }
 
   this.calculateCohension = function(boids) {
     var neighbourDistance = 50;
-    var sum = new Point(0, 0);
+    var sum = new Vector(0, 0);
     var count = 0;
     for (var i = 0; i < boids.length; i++) {
       var distance = this.location.distance(boids[i].location);
@@ -113,7 +113,7 @@ module.exports = function(x, y, size) {
       sum.divide(count);
       return this.seek(sum);
     }
-    return new Point(0, 0);
+    return new Vector(0, 0);
   }
 
   this.draw = function(ctx, width, height, boids) {
@@ -121,7 +121,7 @@ module.exports = function(x, y, size) {
     this.update();
     this.wrapBorders(width, height)
     // Draw the boid
-    var theta = Math.atan2(this.velocity.y, this.velocity.x) + (Math.PI / 2);
+    var theta = Math.atan2(this.velocity.y, this.velocity.x) + (90 * Math.PI / 180);
     ctx.save();
     ctx.translate(this.location.x, this.location.y);
     ctx.rotate(theta);
